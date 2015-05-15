@@ -5,12 +5,12 @@
 
 Warden::Manager.after_authentication do |record, warden, opts|
   if record.respond_to?(:track_login!)
-    record.track_login!(warden.request)
+    record.track_login!(warden.request, warden.session(opts[:scope]))
   end
 end
 Warden::Manager.before_logout do |record, warden, opts|
   if record.respond_to?(:track_logout!)
-    record.track_logout!(warden.request)
+    record.track_logout!(warden.request, warden.session(opts[:scope]))
   end
 end
 
