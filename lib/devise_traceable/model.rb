@@ -20,12 +20,13 @@ module Devise
       def track_logout!(request, session=nil)
         
         login = "#{self.class}Tracing".constantize.where(:sign_in_at => self.current_sign_in_at, "#{self.class}".foreign_key.to_sym => self.id)
-
-
-
-        last_request_at = session['last_request_at']
-
-        new_current = timeout_in ? [Time.now, last_request_at+timeout_in].min : Time.now
+        
+        if session
+          last_request_at = session['last_request_at']
+          new_current = timeout_in ? [Time.now, last_request_at+timeout_in].min : Time.now
+        else
+          new_current = Time.now
+        end
         
         if login && login.first
           login.first.update_attribute(:sign_out_at, new_current)
