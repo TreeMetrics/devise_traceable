@@ -10,10 +10,17 @@ module Devise
 
     module Traceable
       def track_login!(request, session=nil)
+        forward_ip = request.headers["X-Forwarded-For"]
+        user_agent = request.headers["User-Agent"]
+        
         "#{self.class}Tracing".constantize.create({
           :sign_in_at => self.current_sign_in_at,
+          
           :ip => request.remote_ip,
-          :user_agent => request.headers["User-Agent"],
+          :forward_ip => forward_ip,
+          
+          :user_agent => user_agent,
+          
           "#{self.class}".foreign_key.to_sym => self.id
         })
       end
@@ -31,11 +38,18 @@ module Devise
         if login && login.first
           login.first.update_attribute(:sign_out_at, new_current)
         else
+          forward_ip = request.headers["X-Forwarded-For"]
+          user_agent = request.headers["User-Agent"]
+          
           "#{self.class}Tracing".constantize.create({
             :sign_in_at => self.current_sign_in_at,
+            
             :ip => request.remote_ip,
-            :user_agent => request.headers["User-Agent"],
+            :forward_ip => forward_ip,
+            
+            :user_agent => user_agent,
             :sign_out_at => new_current,
+            
             "#{self.class}".foreign_key.to_sym => self.id
           })
         end

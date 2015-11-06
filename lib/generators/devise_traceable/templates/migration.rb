@@ -5,6 +5,7 @@ class DeviseCreate<%= table_name.camelize.singularize %>Tracings < ActiveRecord:
       t.datetime :sign_in_at
       t.datetime :sign_out_at
       t.string :ip
+      t.string :forward_ip
       t.text :user_agent 
     end
 
